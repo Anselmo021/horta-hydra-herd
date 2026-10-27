@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useState } from "react";
+import { useCallback, useState, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -354,7 +354,7 @@ function Metrica({
   tom,
   texto,
 }: {
-  icone: React.ReactNode;
+  icone: ReactNode;
   titulo: string;
   valor: string;
   unidade?: string;
@@ -382,7 +382,7 @@ function Metrica({
 }
 
 function IconeAcao({ acao }: { acao: string }) {
-  const map: Record<string, { icon: React.ReactNode; cls: string }> = {
+  const map: Record<string, { icon: ReactNode; cls: string }> = {
     ligar: { icon: <Power />, cls: "bg-secondary text-primary" },
     desligar: { icon: <PowerOff />, cls: "bg-destructive/10 text-destructive" },
     auto: { icon: <Sparkles />, cls: "bg-sun/20 text-sun-foreground" },
