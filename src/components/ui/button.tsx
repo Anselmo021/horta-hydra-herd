@@ -16,12 +16,19 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        control:
+          "border border-border bg-card text-card-foreground shadow-soft hover:border-primary/50 hover:bg-secondary data-[active=true]:border-primary data-[active=true]:bg-primary data-[active=true]:text-primary-foreground",
+        controlOff:
+          "border border-border bg-card text-card-foreground shadow-soft hover:border-destructive/50 hover:bg-destructive/10 data-[active=true]:border-destructive data-[active=true]:bg-destructive data-[active=true]:text-destructive-foreground",
+        controlAuto:
+          "border border-border bg-card text-card-foreground shadow-soft hover:border-sun/60 hover:bg-sun/15 data-[active=true]:border-sun data-[active=true]:bg-sun data-[active=true]:text-sun-foreground",
       },
       size: {
         default: "h-9 px-4 py-2",
         sm: "h-8 rounded-md px-3 text-xs",
         lg: "h-10 rounded-md px-8",
         icon: "h-9 w-9",
+        tile: "h-auto flex-col gap-2 rounded-2xl px-4 py-5 text-sm font-semibold [&_svg]:size-6",
       },
     },
     defaultVariants: {
