@@ -1,45 +1,94 @@
-# Horta Hydra Herd
+# 🌱 Horta Conectada
 
-Crie um aplicativo web responsivo em português chamado "Horta Conectada", um painel de monitoramento e controle de irrigação, com visual limpo, verde e moderno, que funcione bem no celular.
+Sistema de **IoT** para monitorar e controlar a irrigação de uma horta: um dispositivo **ESP32** mede a umidade do solo, a temperatura e a umidade do ar, envia os dados pela internet para um banco de dados na nuvem, e um **aplicativo web** mostra tudo em tempo real e permite ligar ou desligar a bomba d'água remotamente.
 
-Use o Supabase que JÁ EXISTE (não crie outro banco), com @supabase/supabase-js:
-- URL: COLE_AQUI_SUA_URL
-- Chave publishable: COLE_AQUI_SUA_CHAVE
+Projeto de extensão do Tema Integrador IV (Inteligência Artificial e IoT), do curso de Análise e Desenvolvimento de Sistemas (4º período), da UNIG.
 
-Tabelas existentes:
-1) "leituras": id, umidade_solo (int, em %), temperatura (float), umidade_ar (float), bomba_ligada (boolean), criado_em (timestamp)
-2) "acionamentos_bomba": id, acao (text), origem (text), criado_em (timestamp)
+## 🔗 Links
 
-O painel deve ter:
-- Cartões com a última leitura: umidade do solo (%), temperatura (°C), umidade do ar (%) e status da bomba (Ligada/Desligada).
-- Gráfico de linha com a umidade do solo nas últimas 30 leituras (eixo X com a hora).
-- Alerta vermelho bem visível quando a umidade do solo estiver abaixo de 30%: "Planta precisa de água!". Quando estiver ok, mostrar um indicador verde.
-- Três botões de controle: "Ligar bomba", "Desligar bomba" e "Modo automático". Cada clique faz um INSERT em "acionamentos_bomba" com acao = "ligar", "desligar" ou "auto" e origem = "app", e mostra uma mensagem de confirmação.
-- Mostrar qual é o comando atual (a acao mais recente da tabela).
-- Histórico dos últimos 10 acionamentos (ação, origem, data e hora).
-- Atualização em tempo real com Supabase Realtime nas duas tabelas, e também um refresh automático a cada 5 segundos como reserva.
+- **Aplicativo online:** https://horta-hydra-herd.lovable.app
+- **Simulação do circuito (Wokwi):** https://wokwi.com/projects/478994523962369025
 
-Não precisa de login. Não altere o esquema das tabelas.
+## 🎯 Objetivo
 
-This project was built with [Lovable](https://lovable.dev).
+Ajudar um parceiro da comunidade (horta) a economizar água e cuidar melhor das plantas, evitando a rega "no olho": a planta seca por falta de água ou a água é desperdiçada por excesso.
 
-**Live app**: https://horta-hydra-herd.lovable.app
+Alinhado aos ODS da ONU:
+- **ODS 9:** Indústria, Inovação e Infraestrutura
+- **ODS 11:** Cidades e Comunidades Sustentáveis
 
-## Build with Lovable
+## 🧩 Arquitetura
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/43b4a8d1-196e-4b18-91f3-a5b8f5cdaed6).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
 ```
+ESP32 + sensores (Wokwi)  ──HTTP──▶  Supabase (banco na nuvem)  ──▶  App web (Lovable)
+        ▲                                                                   │
+        └──────────── comando "ligar / desligar / auto" ◀───────────────────┘
+```
+
+1. O ESP32 lê os sensores a cada 5 segundos e envia a leitura ao Supabase (tabela `leituras`).
+2. O aplicativo exibe a última leitura, um gráfico das últimas 30 leituras e um alerta quando o solo está seco.
+3. Ao clicar em um botão do app, o comando é gravado na tabela `acionamentos_bomba`.
+4. O ESP32 consulta o último comando e aciona (ou não) o relé da bomba.
+
+## 🛠️ Tecnologias
+
+| Camada | Ferramenta |
+| --- | --- |
+| Simulação do circuito | Wokwi |
+| Microcontrolador | ESP32 (C/C++, Arduino) |
+| Comunicação | Wi-Fi, HTTP/REST |
+| Banco de dados | Supabase (PostgreSQL) |
+| Front-end | Lovable (React) |
+| Versionamento | GitHub |
+
+## 🔌 Circuito e pinagem
+
+| Componente | Pino do ESP32 |
+| --- | --- |
+| Sensor DHT22 (temperatura e umidade do ar) | GPIO 15 |
+| Potenciômetro (simula a umidade do solo) | GPIO 34 |
+| Módulo relé (bomba d'água) | GPIO 26 |
+| LED de alerta | GPIO 2 |
+
+> Na versão física, o potenciômetro seria substituído por um sensor de umidade de solo (higrômetro) no mesmo pino.
+
+O esquema completo está em [`firmware/diagram.json`](firmware/diagram.json).
+
+## 🗄️ Banco de dados
+
+**`leituras`:** `id`, `umidade_solo`, `temperatura`, `umidade_ar`, `bomba_ligada`, `criado_em`
+
+**`acionamentos_bomba`:** `id`, `acao` (`ligar`, `desligar` ou `auto`), `origem`, `criado_em`
+
+## ⚙️ Como funciona a irrigação
+
+- **Modo automático (`auto`):** se a umidade do solo estiver abaixo de **30%**, a bomba liga e o LED acende.
+- **Comando `ligar` / `desligar`:** enviado pelo aplicativo, tem prioridade sobre o modo automático.
+
+## ▶️ Como testar
+
+1. Abra o projeto no Wokwi e clique em **play** ▶️. No monitor serial deve aparecer `conectado!` e `Envio -> HTTP 201`.
+2. Abra o aplicativo online ao lado.
+3. Gire o **potenciômetro** no Wokwi: o gráfico e os cartões do app mudam em poucos segundos.
+4. Clique em **Ligar bomba** no app: o monitor do Wokwi passa a mostrar `Comando: ligar | Bomba: LIGADA`.
+5. Clique em **Modo automático** para voltar ao normal.
+
+> O Wokwi precisa estar rodando e visível na tela para enviar leituras novas.
+
+## 📁 Estrutura do repositório
+
+```
+├── firmware/
+│   ├── horta_conectada.ino   # código do ESP32
+│   └── diagram.json          # circuito do Wokwi
+└── src/                      # código do aplicativo web
+```
+
+## 🔒 Observação sobre segurança
+
+O código do ESP32 usa apenas a chave **publishable** do Supabase, própria para ficar em código público. Chaves secretas (`service_role` / `secret`) **não** devem ser colocadas no repositório.
+
+## 👤 Autor
+
+**Jonatas Anselmo**
+Curso de Análise e Desenvolvimento de Sistemas, 4º período, UNIG
