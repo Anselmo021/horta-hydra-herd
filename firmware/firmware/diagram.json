@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "author": "Jonatas",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht1", "top": -90, "left": 180, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot1", "top": 90, "left": 200, "attrs": {} },
+    { "type": "wokwi-relay-module", "id": "relay1", "top": 220, "left": 150, "attrs": {} },
+    { "type": "wokwi-led", "id": "led1", "top": -90, "left": -110, "attrs": { "color": "green" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": -20, "left": -110, "attrs": { "value": "220" } }
+  ],
+  "connections": [
+    [ "dht1:VCC", "esp:3V3", "red", [] ],
+    [ "dht1:SDA", "esp:D15", "green", [] ],
+    [ "dht1:GND", "esp:GND.1", "black", [] ],
+    [ "pot1:VCC", "esp:3V3", "red", [] ],
+    [ "pot1:SIG", "esp:D34", "green", [] ],
+    [ "pot1:GND", "esp:GND.1", "black", [] ],
+    [ "relay1:VCC", "esp:VIN", "red", [] ],
+    [ "relay1:IN", "esp:D26", "green", [] ],
+    [ "relay1:GND", "esp:GND.1", "black", [] ],
+    [ "led1:A", "r1:2", "green", [] ],
+    [ "r1:1", "esp:D2", "green", [] ],
+    [ "led1:C", "esp:GND.1", "black", [] ]
+  ],
+  "dependencies": {}
+}
